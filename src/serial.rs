@@ -379,17 +379,17 @@ macro_rules! hal {
 
                 /// Return true if the line idle status is set
                 pub fn is_idle(&self) -> bool {
-                    unsafe { self.usart.sr.modify(|r, _| r.idle().bit_is_set()) }
+                    unsafe { self.usart.sr.read(|r| r.idle().bit_is_set()) }
                 }
 
                 /// Return true if the tx register is empty (and can accept data)
                 pub fn is_txe(&self) -> bool {
-                    unsafe { self.usart.sr.modify(|r, _| r.txe().bit_is_set()) }
+                    unsafe { self.usart.sr.read(|r| r.txe().bit_is_set()) }
                 }
 
                 /// Return true if the rx register is not empty (and can be read)
                 pub fn is_rxne(&self) -> bool {
-                    unsafe { self.usart.sr.modify(|r, _| r.rxne().bit_is_set()) }
+                    unsafe { self.usart.sr.read(|r| r.rxne().bit_is_set()) }
                 }
 
                 /// Returns ownership of the borrowed register handles
