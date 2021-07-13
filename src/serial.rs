@@ -194,18 +194,6 @@ pub struct Tx<USART> {
 /// Internal trait for the serial read / write logic.
 trait UsartReadWrite: Deref<Target = crate::pac::usart1::RegisterBlock> {
 
-    fn clear_idle(&self) -> nb::Result<(), Infallible> {
-        let sr = self.sr.read();
-        if  sr.idle().bit_is_set() {
-            unsafe {
-                ptr::read_volatile(&self.sr as *const _ as *const _);
-                ptr::read_volatile(&self.dr as *const _ as *const _);
-            }
-        }
-
-        Ok(())
-    }
-
     fn read(&self) -> nb::Result<u8, Error> {
         let sr = self.sr.read();
 
@@ -387,6 +375,16 @@ macro_rules! hal {
                         Event::Rxne => self.usart.cr1.modify(|_, w| w.rxneie().clear_bit()),
                         Event::Txe => self.usart.cr1.modify(|_, w| w.txeie().clear_bit()),
                         Event::Idle => self.usart.cr1.modify(|_, w| w.idleie().clear_bit()),
+                    }
+                }
+
+                fn clear_idle(&self)  {
+                    let sr = self.usart.sr.read();
+                    if  sr.idle().bit_is_set() {
+                        unsafe {
+                            ptr::read_volatile(&self.usart.sr as *const _ as *const _);
+                            ptr::read_volatile(&self.usart.dr as *const _ as *const _);
+                        }
                     }
                 }
 
