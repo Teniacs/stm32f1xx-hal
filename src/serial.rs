@@ -378,7 +378,7 @@ macro_rules! hal {
                     }
                 }
 
-                fn clear_idle(&self)  {
+                pub fn clear_idle(&self)  {
                     let sr = self.usart.sr.read();
                     if  sr.idle().bit_is_set() {
                         unsafe {
