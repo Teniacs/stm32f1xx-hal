@@ -222,6 +222,11 @@ trait UsartReadWrite: Deref<Target = crate::pac::usart1::RegisterBlock> {
         } else {
             // Check if a byte is available
             if sr.rxne().bit_is_set() {
+                if sr.idle().bit_is_set() {
+                    unsafe {
+                        ptr::read_volatile(&self.sr as *const _ as *const _);
+                    }
+                }
                 // Read the received byte
                 // NOTE(read_volatile) see `write_volatile` below
                 Ok(unsafe { ptr::read_volatile(&self.dr as *const _ as *const _) })
